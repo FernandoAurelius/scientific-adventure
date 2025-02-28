@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pesquisa Científica: Aprenda Jogando</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.4/vue.global.prod.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/typescript/5.0.4/typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <style>
+    .slide-fade-enter-active,
+    .slide-fade-leave-active {
+      transition: all 0.3s ease;
+    }
+
+    .slide-fade-enter-from,
+    .slide-fade-leave-to {
+      transform: translateX(10px);
+      opacity: 0;
+    }
+
+    .bounce-enter-active {
+      animation: bounce-in 0.5s;
+    }
+
+    @keyframes bounce-in {
+      0% {
+        transform: scale(0);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-blue-50 min-h-screen">
+  <div id="app" class="container mx-auto px-4 py-8">
+    <!-- Componente principal -->
+    <div v-if="!playerName"
+      class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8 mb-6">
+      <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">Mundo da Pesquisa Científica</h1>
+      <p class="text-gray-700 mb-4">Bem-vindo ao nosso jogo educativo! Aqui você vai aprender sobre os diferentes tipos
+        de pesquisa científica de um jeito divertido.</p>
+      <div class="mb-4">
+        <label for="playerName" class="block text-sm font-medium text-gray-700">Seu Nome:</label>
+        <input type="text" id="playerName" v-model="playerNameInput"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Digite seu nome">
+      </div>
+      <button @click="startGame"
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300"
+        :disabled="!playerNameInput" :class="{'opacity-50 cursor-not-allowed': !playerNameInput}">
+        Começar Aventura
+      </button>
+    </div>
+
+    <template v-else>
+      <!-- Header com nome e pontuação -->
+      <div class="bg-white rounded-xl shadow-md p-4 mb-6 flex justify-between items-center">
+        <div>
+          <h1 class="text-2xl font-bold text-blue-600">Mundo da Pesquisa Científica</h1>
+          <p class="text-gray-600">Jogador: {{ playerName }}</p>
+        </div>
+        <div class="text-right">
+          <p class="text-sm text-gray-600">Pontuação Total</p>
+          <p class="text-3xl font-bold text-blue-600">{{ totalScore }}</p>
+        </div>
+      </div>
+
+      <!-- Navegação -->
+      <div class="bg-white rounded-xl shadow-md p-4 mb-6">
+        <div class="flex flex-wrap justify-center gap-4">
+          <button @click="currentSection = 'intro'" class="px-4 py-2 rounded-md transition duration-300"
+            :class="currentSection === 'intro' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'">
+            Introdução
+          </button>
+          <button @click="currentSection = 'qualitativa'" class="px-4 py-2 rounded-md transition duration-300"
+            :class="currentSection === 'qualitativa' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'">
+            Pesquisa Qualitativa
+          </button>
+          <button @click="currentSection = 'quantitativa'" class="px-4 py-2 rounded-md transition duration-300"
+            :class="currentSection === 'quantitativa' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'">
+            Pesquisa Quantitativa
+          </button>
+          <button @click="currentSection = 'atividade1'" class="px-4 py-2 rounded-md transition duration-300"
+            :class="currentSection === 'atividade1' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'">
+            Atividade 1
+          </button>
+          <button @click="currentSection = 'atividade2'" class="px-4 py-2 rounded-md transition duration-300"
+            :class="currentSection === 'atividade2' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'">
+            Atividade 2
+          </button>
+          <button @click="currentSection = 'ranking'" class="px-4 py-2 rounded-md transition duration-300"
+            :class="currentSection === 'ranking' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'">
+            Ranking
+          </button>
+        </div>
+      </div>
+
+      <!-- Conteúdo -->
+      <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+        <!-- Introdução -->
+        <transition name="slide-fade" mode="out-in">
+          <div v-if="currentSection === 'intro'" key="intro">
+            <h2 class="text-2xl font-bold text-blue-600 mb-4">O que é Pesquisa Científica?</h2>
+            <div class="prose max-w-none">
+              <p class="mb-4">A pesquisa científica é um processo sistemático de investigação que busca descobrir,
+                interpretar ou revisar fatos, teorias ou aplicações. É através da pesquisa científica que podemos
+                expandir nosso conhecimento e encontrar soluções para diversos problemas.</p>
+
+              <h3 class="text-xl font-bold text-blue-600 mb-2 mt-6">Características da Pesquisa Científica:</h3>
+              <ul class="list-disc pl-6 mb-4">
+                <li class="mb-2"><span class="font-semibold">Sistematização:</span> Segue métodos e procedimentos
+                  específicos</li>
+                <li class="mb-2"><span class="font-semibold">Objetividade:</span> Busca minimizar influências pessoais
+                  nos resultados</li>
+                <li class="mb-2"><span class="font-semibold">Verificabilidade:</span> Outros pesquisadores podem
+                  reproduzir o estudo</li>
+                <li class="mb-2"><span class="font-semibold">Confiabilidade:</span> Utiliza técnicas reconhecidas pela
+                  comunidade científica</li>
+              </ul>
+
+              <h3 class="text-xl font-bold text-blue-600 mb-2 mt-6">Dois Principais Tipos:</h3>
+              <p class="mb-4">As pesquisas científicas podem ser classificadas de várias formas, mas dois tipos
+                principais são:</p>
+
+              <div class="grid md:grid-cols-2 gap-4 mb-6">
+                <div class="bg-blue-100 p-4 rounded-lg">
+                  <h4 class="font-bold text-blue-700">Pesquisa Qualitativa</h4>
+                  <p>Foca em aspectos subjetivos, interpretações e compreensão profunda dos fenômenos.</p>
+                </div>
+                <div class="bg-green-100 p-4 rounded-lg">
+                  <h4 class="font-bold text-green-700">Pesquisa Quantitativa</h4>
+                  <p>Baseada em dados numéricos, estatísticas e medições objetivas dos fenômenos.</p>
+                </div>
+              </div>
+
+              <p>Clique nos botões acima para aprender mais sobre cada tipo de pesquisa e participar das atividades!</p>
+            </div>
+          </div>
+
+          <!-- Pesquisa Qualitativa -->
+          <div v-else-if="currentSection === 'qualitativa'" key="qualitativa">
+            <h2 class="text-2xl font-bold text-blue-600 mb-4">Pesquisa Qualitativa</h2>
+            <div class="prose max-w-none">
+              <p class="mb-4">A pesquisa qualitativa foca na compreensão profunda de fenômenos sociais, comportamentos
+                humanos e experiências subjetivas. Em vez de números e estatísticas, ela trabalha com palavras,
+                observações e interpretações.</p>
+
+              <div class="bg-blue-100 p-4 rounded-lg mb-6">
+                <h3 class="text-xl font-bold text-blue-600 mb-2">Características Principais:</h3>
+                <ul class="list-disc pl-6">
+                  <li class="mb-2"><span class="font-semibold">Subjetividade:</span> Valoriza as perspectivas e
+                    experiências individuais</li>
+                  <li class="mb-2"><span class="font-semibold">Profundidade:</span> Busca explorar em detalhes um
+                    fenômeno ou situação</li>
+                  <li class="mb-2"><span class="font-semibold">Flexibilidade:</span> Adaptável durante o processo de
+                    pesquisa</li>
+                  <li class="mb-2"><span class="font-semibold">Contextualização:</span> Considera o ambiente e as
+                    circunstâncias</li>
+                </ul>
+              </div>
+
+              <h3 class="text-xl font-bold text-blue-600 mb-2">Métodos Comuns:</h3>
+              <div class="grid md:grid-cols-2 gap-4 mb-6">
+                <div class="bg-white border border-blue-200 p-3 rounded-lg shadow-sm">
+                  <h4 class="font-bold text-blue-700">Entrevistas</h4>
+                  <p>Conversas estruturadas ou semi-estruturadas com participantes</p>
+                </div>
+                <div class="bg-white border border-blue-200 p-3 rounded-lg shadow-sm">
+                  <h4 class="font-bold text-blue-700">Grupos Focais</h4>
+                  <p>Discussões em grupo sobre um tema específico</p>
+                </div>
+                <div class="bg-white border border-blue-200 p-3 rounded-lg shadow-sm">
+                  <h4 class="font-bold text-blue-700">Observação Participante</h4>
+                  <p>O pesquisador se insere no ambiente estudado</p>
+                </div>
+                <div class="bg-white border border-blue-200 p-3 rounded-lg shadow-sm">
+                  <h4 class="font-bold text-blue-700">Análise de Conteúdo</h4>
+                  <p>Interpretação sistemática de textos, imagens ou vídeos</p>
+                </div>
+              </div>
+
+              <h3 class="text-xl font-bold text-blue-600 mb-2">Exemplo Prático:</h3>
+              <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                <p>Um pesquisador que quer entender como estudantes se sentem em relação ao ensino remoto pode realizar
+                  entrevistas detalhadas com 15 alunos, pedindo que descrevam suas experiências, desafios e percepções.
+                </p>
+              </div>
+
+              <p class="italic text-gray-600">Vá para a seção "Atividade 1" para testar seus conhecimentos sobre
+                pesquisa qualitativa!</p>
+            </div>
+          </div>
+
+          <!-- Pesquisa Quantitativa -->
+          <div v-else-if="currentSection === 'quantitativa'" key="quantitativa">
+            <h2 class="text-2xl font-bold text-green-600 mb-4">Pesquisa Quantitativa</h2>
+            <div class="prose max-w-none">
+              <p class="mb-4">A pesquisa quantitativa trabalha principalmente com dados numéricos e análises
+                estatísticas. Seu objetivo é medir, quantificar e estabelecer relações entre variáveis através de
+                métodos matemáticos.</p>
+
+              <div class="bg-green-100 p-4 rounded-lg mb-6">
+                <h3 class="text-xl font-bold text-green-600 mb-2">Características Principais:</h3>
+                <ul class="list-disc pl-6">
+                  <li class="mb-2"><span class="font-semibold">Objetividade:</span> Busca minimizar a influência do
+                    pesquisador</li>
+                  <li class="mb-2"><span class="font-semibold">Mensuração:</span> Traduz fenômenos em números e
+                    estatísticas</li>
+                  <li class="mb-2"><span class="font-semibold">Amostragem:</span> Trabalha com grupos representativos da
+                    população</li>
+                  <li class="mb-2"><span class="font-semibold">Generalização:</span> Procura estabelecer padrões
+                    aplicáveis a grupos maiores</li>
+                </ul>
+              </div>
+
+              <h3 class="text-xl font-bold text-green-600 mb-2">Métodos Comuns:</h3>
+              <div class="grid md:grid-cols-2 gap-4 mb-6">
+                <div class="bg-white border border-green-200 p-3 rounded-lg shadow-sm">
+                  <h4 class="font-bold text-green-700">Surveys/Questionários</h4>
+                  <p>Coleta de dados estruturados de muitos participantes</p>
+                </div>
+                <div class="bg-white border border-green-200 p-3 rounded-lg shadow-sm">
+                  <h4 class="font-bold text-green-700">Experimentos</h4>
+                  <p>Testes controlados para verificar relações de causa e efeito</p>
+                </div>
+                <div class="bg-white border border-green-200 p-3 rounded-lg shadow-sm">
+                  <h4 class="font-bold text-green-700">Análise Estatística</h4>
+                  <p>Uso de métodos matemáticos para interpretar dados</p>
+                </div>
+                <div class="bg-white border border-green-200 p-3 rounded-lg shadow-sm">
+                  <h4 class="font-bold text-green-700">Censo</h4>
+                  <p>Coleta de dados de toda uma população</p>
+                </div>
+              </div>
+
+              <h3 class="text-xl font-bold text-green-600 mb-2">Exemplo Prático:</h3>
+              <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                <p>Um pesquisador que quer entender o impacto do ensino remoto pode aplicar um questionário a 500
+                  alunos, com perguntas sobre notas, horas de estudo e satisfação em escalas numéricas, analisando
+                  depois as correlações estatísticas.</p>
+              </div>
+
+              <p class="italic text-gray-600">Vá para a seção "Atividade 2" para testar seus conhecimentos sobre
+                pesquisa quantitativa!</p>
+            </div>
+          </div>
+
+          <!-- Atividade 1: Classificação de Métodos -->
+          <div v-else-if="currentSection === 'atividade1'" key="atividade1">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-2xl font-bold text-blue-600">Atividade 1: Classificação de Métodos</h2>
+              <div class="bg-blue-100 rounded-full px-4 py-2 text-blue-800 font-bold">
+                Pontos: {{ activity1Score }}
+              </div>
+            </div>
+
+            <p class="mb-6">Arraste cada método de pesquisa para a categoria correta: Qualitativa ou Quantitativa.</p>
+
+            <div v-if="!activity1Completed" class="mb-8">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <!-- Área dos métodos para classificar -->
+                <div class="md:col-span-1 bg-gray-100 p-4 rounded-lg">
+                  <h3 class="font-bold text-gray-700 mb-3">Métodos para Classificar</h3>
+                  <div class="space-y-3">
+                    <div v-for="(method, index) in methodsToClassify" :key="method.id"
+                      @click="classifyMethod(method.id)"
+                      class="bg-white p-3 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors shadow-sm">
+                      {{ method.name }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Áreas de classificação -->
+                <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="bg-blue-100 p-4 rounded-lg">
+                    <h3 class="font-bold text-blue-700 mb-3">Pesquisa Qualitativa</h3>
+                    <div class="min-h-32 space-y-3">
+                      <transition-group name="bounce">
+                        <div v-for="method in classifiedMethods.qualitative" :key="method.id"
+                          class="bg-white p-3 rounded border border-blue-300 shadow-sm">
+                          {{ method.name }}
+                        </div>
+                      </transition-group>
+                    </div>
+                  </div>
+                  <div class="bg-green-100 p-4 rounded-lg">
+                    <h3 class="font-bold text-green-700 mb-3">Pesquisa Quantitativa</h3>
+                    <div class="min-h-32 space-y-3">
+                      <transition-group name="bounce">
+                        <div v-for="method in classifiedMethods.quantitative" :key="method.id"
+                          class="bg-white p-3 rounded border border-green-300 shadow-sm">
+                          {{ method.name }}
+                        </div>
+                      </transition-group>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-center">
+                <button @click="checkActivity1"
+                  class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-300"
+                  :disabled="methodsToClassify.length > 0"
+                  :class="{'opacity-50 cursor-not-allowed': methodsToClassify.length > 0}">
+                  Verificar Respostas
+                </button>
+              </div>
+            </div>
+
+            <div v-else class="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
+              <h3 class="text-xl font-bold text-green-600 mb-3">Parabéns, {{ playerName }}!</h3>
+              <p class="mb-4">Você completou a Atividade 1 e ganhou {{ activity1Score }} pontos!</p>
+              <div class="flex justify-center">
+                <div class="bg-white rounded-lg shadow-md p-4 mb-4 max-w-md">
+                  <h4 class="font-bold text-gray-700 mb-2">Respostas Corretas:</h4>
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <h5 class="font-bold text-blue-600">Qualitativas:</h5>
+                      <ul class="list-disc pl-5 text-left">
+                        <li>Entrevista em profundidade</li>
+                        <li>Grupo focal</li>
+                        <li>Observação participante</li>
+                        <li>Análise de discurso</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h5 class="font-bold text-green-600">Quantitativas:</h5>
+                      <ul class="list-disc pl-5 text-left">
+                        <li>Questionário de múltipla escolha</li>
+                        <li>Análise estatística</li>
+                        <li>Experimento controlado</li>
+                        <li>Survey em larga escala</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button @click="resetActivity1"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-300">
+                Jogar Novamente
+              </button>
+            </div>
+          </div>
+
+          <!-- Atividade 2: Elaboração de Projeto -->
+          <div v-else-if="currentSection === 'atividade2'" key="atividade2">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-2xl font-bold text-blue-600">Atividade 2: Elaboração de Projeto</h2>
+              <div class="bg-blue-100 rounded-full px-4 py-2 text-blue-800 font-bold">
+                Pontos: {{ activity2Score }}
+              </div>
+            </div>
+
+            <p class="mb-6">Nesta atividade, você escolherá um tema e construirá um mini-projeto de pesquisa,
+              selecionando a abordagem mais adequada.</p>
+
+            <div v-if="!activity2Completed" class="mb-8">
+              <!-- Seleção de tema -->
+              <div class="mb-6">
+                <h3 class="text-xl font-bold text-blue-600 mb-3">1. Escolha um tema de pesquisa:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div v-for="(topic, index) in researchTopics" :key="index" @click="selectedTopic = topic"
+                    class="p-4 rounded-lg border-2 cursor-pointer transition-colors"
+                    :class="selectedTopic === topic ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300'">
+                    <h4 class="font-bold mb-1">{{ topic.title }}</h4>
+                    <p class="text-sm text-gray-600">{{ topic.description }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Seleção de abordagem -->
+              <div class="mb-6" v-if="selectedTopic">
+                <h3 class="text-xl font-bold text-blue-600 mb-3">2. Escolha a abordagem mais adequada:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div @click="selectedApproach = 'qualitative'"
+                    class="p-4 rounded-lg border-2 cursor-pointer transition-colors"
+                    :class="selectedApproach === 'qualitative' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300'">
+                    <h4 class="font-bold text-blue-700 mb-2">Pesquisa Qualitativa</h4>
+                    <ul class="list-disc pl-5 text-sm">
+                      <li>Foco em experiências subjetivas</li>
+                      <li>Amostra pequena, porém profunda</li>
+                      <li>Dados em formato de texto ou observações</li>
+                      <li>Análise interpretativa</li>
+                    </ul>
+                  </div>
+                  <div @click="selectedApproach = 'quantitative'"
+                    class="p-4 rounded-lg border-2 cursor-pointer transition-colors"
+                    :class="selectedApproach === 'quantitative' ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-green-300'">
+                    <h4 class="font-bold text-green-700 mb-2">Pesquisa Quantitativa</h4>
+                    <ul class="list-disc pl-5 text-sm">
+                      <li>Foco em medições e números</li>
+                      <li>Amostra grande e representativa</li>
+                      <li>Dados em formato numérico</li>
+                      <li>Análise estatística</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Seleção de métodos -->
+              <div class="mb-6" v-if="selectedTopic && selectedApproach">
+                <h3 class="text-xl font-bold text-blue-600 mb-3">3. Selecione até 3 métodos para sua pesquisa:</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div v-for="(method, index) in availableMethods[selectedApproach]" :key="index"
+                    @click="toggleMethod(method)" class="p-3 rounded-lg border text-sm cursor-pointer transition-colors"
+                    :class="selectedMethods.includes(method) ? 
+                      (selectedApproach === 'qualitative' ? 'border-blue-500 bg-blue-50' : 'border-green-500 bg-green-50') : 
+                      'border-gray-200 hover:bg-gray-50'">
+                    {{ method }}
+                  </div>
+                </div>
+                <p class="text-sm text-gray-600 mt-2">Métodos selecionados: {{ selectedMethods.length }}/3</p>
+              </div>
+
+              <!-- Seleção da justificativa -->
+              <div class="mb-6" v-if="selectedTopic && selectedApproach && selectedMethods.length > 0">
+                <h3 class="text-xl font-bold text-blue-600 mb-3">4. Por que essa abordagem é adequada para o tema?</h3>
+                <div v-for="(justification, index) in availableJustifications[selectedApproach]" :key="index"
+                  class="mb-3">
+                  <label class="flex items-start space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                    <input type="radio" :value="justification" v-model="selectedJustification" class="mt-1">
+                    <span>{{ justification }}</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="text-center">
+                <button @click="checkActivity2"
+                  class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-300"
+                  :disabled="!canSubmitActivity2" :class="{'opacity-50 cursor-not-allowed': !canSubmitActivity2}">
+                  Submeter Projeto
+                </button>
+              </div>
+            </div>
+
+            <div v-else class="bg-green-50 border border-green-200 rounded-lg p-6">
+              <h3 class="text-xl font-bold text-green-600 mb-3 text-center">Parabéns, {{ playerName }}!</h3>
+              <p class="mb-4 text-center">Você completou a Atividade 2 e ganhou {{ activity2Score }} pontos!</p>
+
+              <div class="bg-white rounded-lg shadow-md p-4 mb-6 max-w-3xl mx-auto">
+                <h4 class="font-bold text-blue-600 mb-3">Seu Projeto de Pesquisa:</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                  <div>
+                    <p class="font-bold text-gray-700">Tema:</p>
+                    <p>{{ projectResult.topic.title }}</p>
+                  </div>
+                  <div>
+                    <p class="font-bold text-gray-700">Abordagem:</p>
+                    <p>Pesquisa {{ projectResult.approach === 'qualitative' ? 'Qualitativa' : 'Quantitativa' }}</p>
+                  </div>
+                  <div>
+                    <p class="font-bold text-gray-700">Métodos Selecionados:</p>
+                    <ul class="list-disc pl-5">
+                      <li v-for="(method, index) in projectResult.methods" :key="index">{{ method }}</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p class="font-bold text-gray-700">Justificativa:</p>
+                    <p class="text-sm">{{ projectResult.justification }}</p>
+                  </div>
+                </div>
+                <div class="mt-4 pt-4 border-t">
+                  <p class="font-bold text-gray-700">Avaliação:</p>
+                  <p v-html="projectResult.feedback"></p>
+                </div>
+              </div>
+
+              <div class="text-center">
+                <button @click="resetActivity2"
+                  class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-300">
+                  Criar Novo Projeto
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ranking -->
+          <div v-else-if="currentSection === 'ranking'" key="ranking">
+            <h2 class="text-2xl font-bold text-blue-600 mb-6">Ranking de Jogadores</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="bg-blue-600 text-white py-3 px-4">
+                  <h3 class="text-lg font-bold">Sua Pontuação</h3>
+                </div>
+                <div class="p-4">
+                  <div class="flex justify-between items-center mb-3">
+                    <div class="font-bold text-lg">{{ playerName }}</div>
+                    <div class="text-3xl font-bold text-blue-600">{{ totalScore }}</div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-3 text-center">
+                    <div class="bg-blue-50 rounded p-2">
+                      <div class="text-sm text-gray-600">Atividade 1</div>
+                      <div class="font-bold text-blue-600">{{ activity1Score }}</div>
+                    </div>
+                    <div class="bg-blue-50 rounded p-2">
+                      <div class="text-sm text-gray-600">Atividade 2</div>
+                      <div class="font-bold text-blue-600">{{ activity2Score }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="bg-indigo-600 text-white py-3 px-4">
+                  <h3 class="text-lg font-bold">Medalhas Conquistadas</h3>
+                </div>
+                <div class="p-4">
+                  <div class="grid grid-cols-3 gap-3">
+                    <div v-for="(badge, index) in earnedBadges" :key="index"
+                      class="text-center bg-gray-50 rounded-lg p-3">
+                      <div class="text-2xl mb-1">{{ badge.emoji }}</div>
+                      <div class="font-bold text-sm">{{ badge.name }}</div>
+                      <div class="text-xs text-gray-600">{{ badge.description }}</div>
+                    </div>
+                    <div v-if="earnedBadges.length === 0" class="col-span-3 text-center py-4 text-gray-500">
+                      Complete as atividades para ganhar medalhas!
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+              <div class="bg-purple-600 text-white py-3 px-4">
+                <h3 class="text-lg font-bold">Classificação Geral</h3>
+              </div>
+              <div class="p-4">
+                <div class="overflow-x-auto">
+                  <table class="min-w-full">
+                    <thead>
+                      <tr class="border-b">
+                        <th class="py-2 px-3 text-left">Posição</th>
+                        <th class="py-2 px-3 text-left">Jogador</th>
+                        <th class="py-2 px-3 text-right">Pontuação</th>
+                        <th class="py-2 px-3 text-center">Medalhas</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(player, index) in leaderboard" :key="index" class="border-b hover:bg-gray-50"
+                        :class="{'bg-blue-50': player.name === playerName}">
+                        <td class="py-3 px-3">
+                          <span class="font-bold" :class="{
+                            'text-yellow-500': index === 0,
+                            'text-gray-400': index === 1,
+                            'text-amber-600': index === 2
+                          }">{{ index + 1 }}</span>
+                        </td>
+                        <td class="py-3 px-3 font-medium">{{ player.name }}</td>
+                        <td class="py-3 px-3 text-right font-bold">{{ player.score }}</td>
+                        <td class="py-3 px-3 text-center">
+                          <div class="flex justify-center space-x-1">
+                            <span v-for="(badge, bIndex) in player.badges" :key="bIndex">{{ badge }}</span>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </transition>
+      </div>
+    </template>
+  </div>
+  <!-- Script Vue -->
+  <script>
+    const { createApp, ref, computed, watch } = Vue;
+
+    const app = createApp({
+      setup() {
+        // Estado do jogador
+        const playerNameInput = ref("");
+        const playerName = ref("");
+        const activity1Score = ref(0);
+        const activity2Score = ref(0);
+        const currentSection = ref("intro");
+
+        // Estado das atividades
+        const activity1Completed = ref(false);
+        const activity2Completed = ref(false);
+
+        // Atividade 1: Classificação de métodos
+        const allMethods = [
+          { id: 1, name: "Entrevista em profundidade", type: "qualitative" },
+          { id: 2, name: "Questionário de múltipla escolha", type: "quantitative" },
+          { id: 3, name: "Grupo focal", type: "qualitative" },
+          { id: 4, name: "Análise estatística", type: "quantitative" },
+          { id: 5, name: "Observação participante", type: "qualitative" },
+          { id: 6, name: "Experimento controlado", type: "quantitative" },
+          { id: 7, name: "Análise de discurso", type: "qualitative" },
+          { id: 8, name: "Survey em larga escala", type: "quantitative" }
+        ];
+
+        const methodsToClassify = ref([...allMethods]);
+        const classifiedMethods = ref({
+          qualitative: [],
+          quantitative: []
+        });
+
+        // Atividade 2: Elaboração de projeto
+        const researchTopics = [
+          {
+            title: "Uso de tecnologia na educação",
+            description: "Investigar como recursos tecnológicos impactam o aprendizado dos estudantes",
+            bestApproach: "mixed"
+          },
+          {
+            title: "Hábitos alimentares de adolescentes",
+            description: "Estudar padrões de alimentação entre jovens de 12 a 18 anos",
+            bestApproach: "quantitative"
+          },
+          {
+            title: "Experiências de bullying nas escolas",
+            description: "Compreender as vivências de estudantes que sofreram bullying",
+            bestApproach: "qualitative"
+          }
+        ];
+
+        const availableMethods = {
+          qualitative: [
+            "Entrevistas em profundidade",
+            "Grupos focais",
+            "Observação participante",
+            "Histórias de vida",
+            "Análise de diários",
+            "Estudos de caso"
+          ],
+          quantitative: [
+            "Questionários estruturados",
+            "Surveys online",
+            "Análise estatística",
+            "Experimentos controlados",
+            "Coleta de dados biométricos",
+            "Análise de séries temporais"
+          ]
+        };
+
+        const availableJustifications = {
+          qualitative: [
+            "Permite compreender as experiências subjetivas e perspectivas pessoais dos participantes.",
+            "Possibilita a exploração em profundidade de um fenômeno complexo e multifacetado.",
+            "Oferece flexibilidade para adaptar a investigação conforme novos insights emergem.",
+            "É ideal para capturar nuances culturais e contextuais que influenciam o comportamento."
+          ],
+          quantitative: [
+            "Permite coletar dados de uma grande amostra e fazer generalizações estatísticas.",
+            "Possibilita a medição precisa de variáveis e o teste de relações de causa e efeito.",
+            "Oferece resultados objetivos que podem ser verificados e replicados por outros pesquisadores.",
+            "É ideal para identificar padrões, tendências e correlações em grandes conjuntos de dados."
+          ]
+        };
+
+        const selectedTopic = ref(null);
+        const selectedApproach = ref(null);
+        const selectedMethods = ref([]);
+        const selectedJustification = ref(null);
+        const projectResult = ref(null);
+
+        // Ranking e pontuação
+        const totalScore = computed(() => {
+          return activity1Score.value + activity2Score.value;
+        });
+
+        const earnedBadges = computed(() => {
+          const badges = [];
+
+          if (activity1Completed.value) {
+            badges.push({
+              emoji: "🔍",
+              name: "Classificador",
+              description: "Completou a atividade de classificação"
+            });
+          }
+
+          if (activity2Completed.value) {
+            badges.push({
+              emoji: "📊",
+              name: "Pesquisador",
+              description: "Elaborou um projeto de pesquisa"
+            });
+          }
+
+          if (totalScore.value >= 150) {
+            badges.push({
+              emoji: "🏆",
+              name: "Cientista Master",
+              description: "Alcançou pontuação alta"
+            });
+          }
+
+          return badges;
+        });
+
+        const leaderboard = computed(() => {
+          // Simula um ranking com jogadores fictícios + o jogador atual
+          const otherPlayers = [
+            { name: "Ana Silva", score: 190, badges: ["🔍", "📊", "🏆"] },
+            { name: "Pedro Santos", score: 165, badges: ["🔍", "📊", "🏆"] },
+            { name: "Júlia Oliveira", score: 145, badges: ["🔍", "📊"] },
+            { name: "Carlos Mendes", score: 120, badges: ["🔍", "📊"] },
+            { name: "Mariana Costa", score: 100, badges: ["🔍"] },
+            { name: "Rafael Souza", score: 85, badges: ["🔍"] }
+          ];
+
+          // Adiciona o jogador atual se tiver um nome
+          let allPlayers = [...otherPlayers];
+          if (playerName.value) {
+            const currentPlayer = {
+              name: playerName.value,
+              score: totalScore.value,
+              badges: earnedBadges.value.map(badge => badge.emoji)
+            };
+            allPlayers.push(currentPlayer);
+          }
+
+          // Ordena por pontuação
+          return allPlayers.sort((a, b) => b.score - a.score);
+        });
+
+        // Funções da Atividade 1
+        function classifyMethod(methodId) {
+          const methodIndex = methodsToClassify.value.findIndex(m => m.id === methodId);
+          if (methodIndex === -1) return;
+
+          const method = methodsToClassify.value[methodIndex];
+          methodsToClassify.value.splice(methodIndex, 1);
+
+          if (method.type === "qualitative") {
+            classifiedMethods.value.qualitative.push(method);
+          } else {
+            classifiedMethods.value.quantitative.push(method);
+          }
+        }
+
+        function checkActivity1() {
+          let correctCount = 0;
+
+          // Verifica métodos qualitativos
+          classifiedMethods.value.qualitative.forEach(method => {
+            if (method.type === "qualitative") {
+              correctCount++;
+            }
+          });
+
+          // Verifica métodos quantitativos
+          classifiedMethods.value.quantitative.forEach(method => {
+            if (method.type === "quantitative") {
+              correctCount++;
+            }
+          });
+
+          // Calcula pontuação (cada acerto vale 10 pontos)
+          activity1Score.value = correctCount * 10;
+          activity1Completed.value = true;
+
+          // Salva no localStorage
+          savePlayerData();
+        }
+
+        function resetActivity1() {
+          methodsToClassify.value = [...allMethods];
+          classifiedMethods.value = {
+            qualitative: [],
+            quantitative: []
+          };
+          activity1Completed.value = false;
+        }
+
+        // Funções da Atividade 2
+        function toggleMethod(method) {
+          const index = selectedMethods.value.indexOf(method);
+          if (index === -1) {
+            if (selectedMethods.value.length < 3) {
+              selectedMethods.value.push(method);
+            }
+          } else {
+            selectedMethods.value.splice(index, 1);
+          }
+        }
+
+        const canSubmitActivity2 = computed(() => {
+          return selectedTopic.value &&
+            selectedApproach.value &&
+            selectedMethods.value.length > 0 &&
+            selectedJustification.value;
+        });
+
+        function checkActivity2() {
+          let score = 0;
+          let feedback = "";
+
+          // Avalia a escolha da abordagem
+          const topicBestApproach = selectedTopic.value.bestApproach;
+          if (
+            (topicBestApproach === selectedApproach.value) ||
+            (topicBestApproach === "mixed")
+          ) {
+            score += 50;
+            feedback += "<span class='text-green-600 font-bold'>✓ Excelente escolha de abordagem!</span> ";
+            if (topicBestApproach === "mixed") {
+              feedback += `Tanto a abordagem qualitativa quanto a quantitativa são válidas para este tema, 
+                          e você escolheu a ${selectedApproach.value === 'qualitative' ? 'qualitativa' : 'quantitativa'}. `;
+            } else {
+              feedback += `A abordagem ${selectedApproach.value === 'qualitative' ? 'qualitativa' : 'quantitativa'} 
+                          é realmente a mais adequada para este tema. `;
+            }
+          } else {
+            score += 20;
+            feedback += "<span class='text-yellow-600 font-bold'>⚠ Sua escolha de abordagem poderia ser reconsiderada.</span> ";
+            feedback += `Para o tema "${selectedTopic.value.title}", a abordagem 
+                        ${topicBestApproach === 'qualitative' ? 'qualitativa' : 'quantitativa'} 
+                        talvez fosse mais apropriada porque `;
+
+            if (topicBestApproach === 'qualitative') {
+              feedback += "o foco está na compreensão profunda de experiências subjetivas. ";
+            } else {
+              feedback += "o foco está na medição de padrões e tendências em uma população maior. ";
+            }
+          }
+
+          // Avalia a seleção de métodos
+          if (selectedMethods.value.length >= 2) {
+            score += 30;
+            feedback += "<span class='text-green-600 font-bold'>✓ Boa seleção de métodos!</span> ";
+            feedback += "A combinação de diferentes métodos fortalece sua pesquisa. ";
+          } else {
+            score += 15;
+            feedback += "<span class='text-yellow-600'>⚠ Considere usar mais de um método</span> ";
+            feedback += "para triangular seus dados e obter resultados mais robustos. ";
+          }
+
+          // Salva o resultado do projeto
+          projectResult.value = {
+            topic: selectedTopic.value,
+            approach: selectedApproach.value,
+            methods: [...selectedMethods.value],
+            justification: selectedJustification.value,
+            feedback: feedback,
+            score: score
+          };
+
+          // Atualiza pontuação e marca como completado
+          activity2Score.value = score;
+          activity2Completed.value = true;
+
+          // Salva no localStorage
+          savePlayerData();
+        }
+
+        function resetActivity2() {
+          selectedTopic.value = null;
+          selectedApproach.value = null;
+          selectedMethods.value = [];
+          selectedJustification.value = null;
+          projectResult.value = null;
+          activity2Completed.value = false;
+        }
+
+        // Funções gerais
+        function startGame() {
+          playerName.value = playerNameInput.value;
+          loadPlayerData();
+        }
+
+        function savePlayerData() {
+          if (!playerName.value) return;
+
+          const playerData = {
+            name: playerName.value,
+            activity1: {
+              completed: activity1Completed.value,
+              score: activity1Score.value
+            },
+            activity2: {
+              completed: activity2Completed.value,
+              score: activity2Score.value
+            }
+          };
+
+          localStorage.setItem(`pesquisa_cientifica_${ playerName.value }, JSON.stringify(playerData)`);
+        }
+
+        function loadPlayerData() {
+          const savedData = localStorage.getItem(`pesquisa_cientifica_${ playerName.value }`);
+          if (!savedData) return;
+
+          try {
+            const data = JSON.parse(savedData);
+
+            if (data.activity1) {
+              activity1Completed.value = data.activity1.completed;
+              activity1Score.value = data.activity1.score;
+            }
+
+            if (data.activity2) {
+              activity2Completed.value = data.activity2.completed;
+              activity2Score.value = data.activity2.score;
+            }
+          } catch (error) {
+            console.error("Erro ao carregar dados salvos:", error);
+          }
+        }
+
+        return {
+          // Estado do jogador
+          playerNameInput,
+          playerName,
+          activity1Score,
+          activity2Score,
+          totalScore,
+          currentSection,
+          activity1Completed,
+          activity2Completed,
+
+          // Atividade 1
+          methodsToClassify,
+          classifiedMethods,
+          classifyMethod,
+          checkActivity1,
+          resetActivity1,
+
+          // Atividade 2
+          researchTopics,
+          availableMethods,
+          availableJustifications,
+          selectedTopic,
+          selectedApproach,
+          selectedMethods,
+          selectedJustification,
+          canSubmitActivity2,
+          toggleMethod,
+          checkActivity2,
+          resetActivity2,
+          projectResult,
+
+          // Ranking
+          earnedBadges,
+          leaderboard,
+
+          // Funções gerais
+          startGame
+        };
+      }
+    });
+
+    app.mount('#app');
+  </script>
+</body>
+
+</html>
+</antArtifact>
