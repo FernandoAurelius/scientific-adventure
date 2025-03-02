@@ -32,8 +32,8 @@ Siga os passos abaixo para configurar o ambiente localmente:
 1. **Clone o repositório:**
 
    ```bash
-   git clone https://github.com/seu-usuario/aventura-cientifica.git
-   cd aventura-cientifica
+   git clone https://github.com/FernandoAureliuus/scientific-adventure.git
+   cd scientific-adventure
    ```
 
 2. **Instale as dependências**
