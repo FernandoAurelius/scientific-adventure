@@ -85,3 +85,7 @@ Atualmente, a aplicação pode estar utilizando a Composition API via setup(). P
 
 - Refatoração da Lógica de Pontuação e Players:
 Melhore o sistema de pontuação e criação de jogadores para integrá-los com um banco de dados do Firebase. Essa integração permitirá armazenar os dados dos usuários e pontuações de forma persistente e adequada, possibilitando recursos como rankings dinâmicos e recuperação dos dados do usuário em diferentes sessões.
+
+## Licença
+
+Este projeto está licenciado sob a [MIT License](https://opensource.org/license/mit).
