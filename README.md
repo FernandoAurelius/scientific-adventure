@@ -59,16 +59,16 @@ B --> C{currentSection}
 C -->|intro| D[IntroSection]
 C -->|qualitativa| E[QualitativaSection]
 C -->|quantitativa| F[QuantitativaSection]
-C -->|atividade1| G[Activity1]
-C -->|atividade2| H[Activity2]
+C -->|atividade1| G[ActivityOne]
+C -->|atividade2| H[ActivityTwo]
 C -->|ranking| I[Ranking]
 ```
 
-- WelcomeScreen: Tela inicial onde o usuário informa seu nome.
-- Header & Navigation: Exibição do título, nome do jogador, pontuação total e navegação entre seções.
-- IntroSection, QualitativaSection e QuantitativaSection: Seções com conteúdos teóricos.
-- Activity1 e Activity2: Atividades interativas para testar os conhecimentos.
-- Ranking: Exibição do ranking dos jogadores.
+- **WelcomeScreen**: Tela inicial onde o usuário informa seu nome.
+- **Header & Navigation**: Exibição do título, nome do jogador, pontuação total e navegação entre seções.
+- **IntroSection, QualitativaSection e QuantitativaSection**: Seções com conteúdos teóricos.
+- **ActivityOne e ActivityTwo**: Atividades interativas para testar os conhecimentos.
+- **Ranking**: Exibição do ranking dos jogadores.
 
 ## Melhorias e Refatorações Propostas
 
