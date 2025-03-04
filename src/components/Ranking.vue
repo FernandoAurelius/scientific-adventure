@@ -101,7 +101,6 @@
 import { defineComponent } from 'vue';
 import type Player from '@/interfaces/Player';
 import type Badge from '@/interfaces/Badge';
-import type { PropType } from 'vue';
 
 export default defineComponent({
   name: 'Ranking',
@@ -122,13 +121,11 @@ export default defineComponent({
       type: Number,
       required: true
     },
-    earnedBadges: {
-      type: Array as PropType<Badge[]>,
-      required: true
-    },
-    leaderboard: {
-      type: Array as PropType<Player[]>,
-      required: true
+  },
+  data() {
+    return {
+      earnedBadges: [] as Badge[],
+      leaderboard: [] as Player[]
     }
   },
   computed: {
@@ -184,10 +181,8 @@ export default defineComponent({
       },
   },
   created() {
-    return {
-      earnedBadges: this.getEarnedBadges,
-      leaderboard: this.loadLeaderboard
-    }
+    this.earnedBadges = this.getEarnedBadges;
+    this.leaderboard = this.loadLeaderboard;
   }
 });
 </script>
