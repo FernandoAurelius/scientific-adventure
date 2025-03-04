@@ -98,7 +98,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
+import { defineComponent } from 'vue';
 import type Player from '@/interfaces/Player';
 import type Badge from '@/interfaces/Badge';
 
@@ -120,61 +120,69 @@ export default defineComponent({
     activity2Score: {
       type: Number,
       required: true
+    },
+  },
+  data() {
+    return {
+      earnedBadges: [] as Badge[],
+      leaderboard: [] as Player[]
     }
   },
-  setup(props) {
-    // Computa as medalhas com base na pontuação e atividades completadas
-    const earnedBadges = computed<Badge[]>(() => {
-      const badges: Badge[] = [];
-      if (props.activity1Score > 0) {
-        badges.push({
-          emoji: "🔍",
-          name: "Classificador",
-          description: "Completou a atividade de classificação"
-        });
-      }
-      if (props.activity2Score > 0) {
-        badges.push({
-          emoji: "📊",
-          name: "Pesquisador",
-          description: "Elaborou um projeto de pesquisa"
-        });
-      }
-      if (props.totalScore >= 150) {
-        badges.push({
-          emoji: "🏆",
-          name: "Cientista Master",
-          description: "Alcançou pontuação alta"
-        });
-      }
-      return badges;
-    });
+  computed: {
+      getEarnedBadges() {
+        const badges: Badge[] = [];
 
-    // Simula outros jogadores e inclui o jogador atual, ordenando pelo score
-    const leaderboard = computed<Player[]>(() => {
-      const otherPlayers: Player[] = [
-        { name: "Ana Silva", score: 190, badges: ["🔍", "📊", "🏆"] },
-        { name: "Pedro Santos", score: 165, badges: ["🔍", "📊", "🏆"] },
-        { name: "Júlia Oliveira", score: 145, badges: ["🔍", "📊"] },
-        { name: "Carlos Mendes", score: 120, badges: ["🔍", "📊"] },
-        { name: "Mariana Costa", score: 100, badges: ["🔍"] },
-        { name: "Rafael Souza", score: 85, badges: ["🔍"] }
-      ];
-      const players: Player[] = [...otherPlayers];
-      if (props.playerName) {
-        players.push({
-          name: props.playerName,
-          score: props.totalScore,
-          badges: earnedBadges.value.map(badge => badge.emoji)
-        });
-      }
-      return players.sort((a, b) => b.score - a.score);
-    });
+        if (this.activity1Score > 0) {
+          badges.push({
+            emoji: "🔍",
+            name: "Classificador",
+            description: "Completou a atividade de classificação"
+          });
+        }
 
-    return {
-      earnedBadges,
-      leaderboard
-    };
+        if (this.activity2Score > 0) {
+          badges.push({
+            emoji: "📊",
+            name: "Pesquisador",
+            description: "Elaborou um projeto de pesquisa"
+          });
+        }
+
+        if (this.totalScore >= 150) {
+          badges.push({
+            emoji: "🏆",
+            name: "Cientista Master",
+            description: "Alcançou pontuação alta"
+          });
+        }
+
+        return badges;
+      },
+      loadLeaderboard() {
+        const otherPlayers: Player[] = [
+          { name: "Ana Silva", score: 190, badges: ["🔍", "📊", "🏆"] },
+          { name: "Pedro Santos", score: 165, badges: ["🔍", "📊", "🏆"] },
+          { name: "Júlia Oliveira", score: 145, badges: ["🔍", "📊"] },
+          { name: "Carlos Mendes", score: 120, badges: ["🔍", "📊"] },
+          { name: "Mariana Costa", score: 100, badges: ["🔍"] },
+          { name: "Rafael Souza", score: 85, badges: ["🔍"] }
+        ];
+
+        const players: Player[] = [...otherPlayers];
+        if (this.playerName) {
+          players.push({
+            name: this.playerName,
+            score: this.totalScore,
+            badges: this.getEarnedBadges.map((badge: Badge) => badge.emoji)
+          });
+        }
+
+        return players.sort((a: Player, b: Player) => b.score - a.score);
+      },
+  },
+  created() {
+    this.earnedBadges = this.getEarnedBadges;
+    this.leaderboard = this.loadLeaderboard;
   }
 });
 </script>

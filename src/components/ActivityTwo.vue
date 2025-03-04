@@ -9,7 +9,8 @@
     </div>
 
     <p class="mb-6">
-      Nesta atividade, você escolherá um tema e construirá um mini-projeto de pesquisa, selecionando a abordagem mais adequada.
+      Nesta atividade, você escolherá um tema e construirá um mini-projeto de pesquisa, selecionando a abordagem mais
+      adequada.
     </p>
 
     <!-- Parte ativa da atividade (quando não completada) -->
@@ -18,13 +19,9 @@
       <div class="mb-6">
         <h3 class="text-xl font-bold text-blue-600 mb-3">1. Escolha um tema de pesquisa:</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div
-            v-for="(topic, index) in researchTopics"
-            :key="index"
-            @click="selectedTopic = topic"
+          <div v-for="(topic, index) in researchTopics" :key="index" @click="selectedTopic = topic"
             class="p-4 rounded-lg border-2 cursor-pointer transition-colors"
-            :class="selectedTopic === topic ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300'"
-          >
+            :class="selectedTopic === topic ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300'">
             <h4 class="font-bold mb-1">{{ topic.title }}</h4>
             <p class="text-sm text-gray-600">{{ topic.description }}</p>
           </div>
@@ -35,11 +32,9 @@
       <div class="mb-6" v-if="selectedTopic">
         <h3 class="text-xl font-bold text-blue-600 mb-3">2. Escolha a abordagem mais adequada:</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div
-            @click="selectedApproach = 'qualitative'"
+          <div @click="selectedApproach = 'qualitative'"
             class="p-4 rounded-lg border-2 cursor-pointer transition-colors"
-            :class="selectedApproach === 'qualitative' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300'"
-          >
+            :class="selectedApproach === 'qualitative' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300'">
             <h4 class="font-bold text-blue-700 mb-2">Pesquisa Qualitativa</h4>
             <ul class="list-disc pl-5 text-sm">
               <li>Foco em experiências subjetivas</li>
@@ -48,11 +43,9 @@
               <li>Análise interpretativa</li>
             </ul>
           </div>
-          <div
-            @click="selectedApproach = 'quantitative'"
+          <div @click="selectedApproach = 'quantitative'"
             class="p-4 rounded-lg border-2 cursor-pointer transition-colors"
-            :class="selectedApproach === 'quantitative' ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-green-300'"
-          >
+            :class="selectedApproach === 'quantitative' ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-green-300'">
             <h4 class="font-bold text-green-700 mb-2">Pesquisa Quantitativa</h4>
             <ul class="list-disc pl-5 text-sm">
               <li>Foco em medições e números</li>
@@ -68,15 +61,10 @@
       <div class="mb-6" v-if="selectedTopic && selectedApproach">
         <h3 class="text-xl font-bold text-blue-600 mb-3">3. Selecione até 3 métodos para sua pesquisa:</h3>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div
-            v-for="(method, index) in availableMethods[selectedApproach]"
-            :key="index"
-            @click="toggleMethod(method)"
-            class="p-3 rounded-lg border text-sm cursor-pointer transition-colors"
-            :class="selectedMethods.includes(method) ?
+          <div v-for="(method, index) in availableMethods[selectedApproach]" :key="index" @click="toggleMethod(method)"
+            class="p-3 rounded-lg border text-sm cursor-pointer transition-colors" :class="selectedMethods.includes(method) ?
               (selectedApproach === 'qualitative' ? 'border-blue-500 bg-blue-50' : 'border-green-500 bg-green-50') :
-              'border-gray-200 hover:bg-gray-50'"
-          >
+              'border-gray-200 hover:bg-gray-50'">
             {{ method }}
           </div>
         </div>
@@ -86,11 +74,7 @@
       <!-- Seleção da justificativa -->
       <div class="mb-6" v-if="selectedTopic && selectedApproach && selectedMethods.length > 0">
         <h3 class="text-xl font-bold text-blue-600 mb-3">4. Por que essa abordagem é adequada para o tema?</h3>
-        <div
-          v-for="(justification, index) in availableJustifications[selectedApproach]"
-          :key="index"
-          class="mb-3"
-        >
+        <div v-for="(justification, index) in availableJustifications[selectedApproach]" :key="index" class="mb-3">
           <label class="flex items-start space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
             <input type="radio" :value="justification" v-model="selectedJustification" class="mt-1">
             <span>{{ justification }}</span>
@@ -99,12 +83,9 @@
       </div>
 
       <div class="text-center">
-        <button
-          @click="checkActivity2"
+        <button @click="checkActivity2"
           class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-300"
-          :disabled="!canSubmitActivity2"
-          :class="{'opacity-50 cursor-not-allowed': !canSubmitActivity2}"
-        >
+          :disabled="!canSubmitActivity2" :class="{ 'opacity-50 cursor-not-allowed': !canSubmitActivity2 }">
           Submeter Projeto
         </button>
       </div>
@@ -144,10 +125,8 @@
       </div>
 
       <div class="text-center">
-        <button
-          @click="resetActivity2"
-          class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-300"
-        >
+        <button @click="resetActivity2"
+          class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-300">
           Criar Novo Projeto
         </button>
       </div>
@@ -156,7 +135,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue';
+import { defineComponent } from 'vue';
 import type ResearchTopic from '@/interfaces/ResearchTopic';
 import type ProjectResult from '@/interfaces/ProjectResult';
 
@@ -168,9 +147,28 @@ export default defineComponent({
       required: true
     }
   },
-  setup() {
-    // Temas de pesquisa
-    const researchTopics: ResearchTopic[] = [
+  data() {
+    return {
+      researchTopics: [] as ResearchTopic[],
+      availableMethods: {
+        qualitative: [] as string[],
+        quantitative: [] as string[]
+      },
+      availableJustifications: {
+        qualitative: [] as string[],
+        quantitative: [] as string[]
+      },
+      selectedTopic: null as ResearchTopic | null,
+      selectedApproach: null as 'qualitative' | 'quantitative' | null,
+      selectedMethods: [] as string[],
+      selectedJustification: null as string | null,
+      projectResult: null as ProjectResult | null,
+      activity2Completed: false,
+      activity2Score: 0
+    }
+  },
+  created() {
+    this.researchTopics = [
       {
         title: "Uso de tecnologia na educação",
         description: "Investigar como recursos tecnológicos impactam o aprendizado dos estudantes",
@@ -188,8 +186,7 @@ export default defineComponent({
       }
     ];
 
-    // Métodos disponíveis para cada abordagem
-    const availableMethods: { [key in 'qualitative' | 'quantitative']: string[] } = {
+    this.availableMethods = {
       qualitative: [
         "Entrevistas em profundidade",
         "Grupos focais",
@@ -208,74 +205,61 @@ export default defineComponent({
       ]
     };
 
-    // Justificativas disponíveis para cada abordagem
-    const availableJustifications: { [key in 'qualitative' | 'quantitative']: string[] } = {
-      qualitative: [
-        "Permite compreender as experiências subjetivas e perspectivas pessoais dos participantes.",
-        "Possibilita a exploração em profundidade de um fenômeno complexo e multifacetado.",
-        "Oferece flexibilidade para adaptar a investigação conforme novos insights emergem.",
-        "É ideal para capturar nuances culturais e contextuais que influenciam o comportamento."
-      ],
-      quantitative: [
-        "Permite coletar dados de uma grande amostra e fazer generalizações estatísticas.",
-        "Possibilita a medição precisa de variáveis e o teste de relações de causa e efeito.",
-        "Oferece resultados objetivos que podem ser verificados e replicados por outros pesquisadores.",
-        "É ideal para identificar padrões, tendências e correlações em grandes conjuntos de dados."
-      ]
-    };
+    this.availableJustifications.qualitative = [
+      "Permite compreender as experiências subjetivas e perspectivas pessoais dos participantes.",
+      "Possibilita a exploração em profundidade de um fenômeno complexo e multifacetado.",
+      "Oferece flexibilidade para adaptar a investigação conforme novos insights emergem.",
+      "É ideal para capturar nuances culturais e contextuais que influenciam o comportamento."
+    ];
 
-    // Estados da atividade
-    const selectedTopic = ref<ResearchTopic | null>(null);
-    const selectedApproach = ref<'qualitative' | 'quantitative' | null>(null);
-    const selectedMethods = ref<string[]>([]);
-    const selectedJustification = ref<string | null>(null);
-    const projectResult = ref<ProjectResult | null>(null);
-    const activity2Completed = ref<boolean>(false);
-    const activity2Score = ref<number>(0);
-
-    // Computed: verificar se pode submeter o projeto
-    const canSubmitActivity2 = computed(() => {
-      return selectedTopic.value !== null &&
-             selectedApproach.value !== null &&
-             selectedMethods.value.length > 0 &&
-             selectedJustification.value !== null;
-    });
-
-    // Função para alternar método na seleção (max. 3 métodos)
-    function toggleMethod(method: string) {
-      const index = selectedMethods.value.indexOf(method);
+    this.availableJustifications.quantitative = [
+      "Permite coletar dados de uma grande amostra e fazer generalizações estatísticas.",
+      "Possibilita a medição precisa de variáveis e o teste de relações de causa e efeito.",
+      "Oferece resultados objetivos que podem ser verificados e replicados por outros pesquisadores.",
+      "É ideal para identificar padrões, tendências e correlações em grandes conjuntos de dados."
+    ];
+  },
+  computed: {
+    canSubmitActivity2(): boolean {
+      return this.selectedTopic !== null &&
+        this.selectedApproach !== null &&
+        this.selectedMethods.length > 0 &&
+        this.selectedJustification !== null;
+    }
+  },
+  methods: {
+    toggleMethod(method: string): void {
+      const index = this.selectedMethods.indexOf(method);
       if (index === -1) {
-        if (selectedMethods.value.length < 3) {
-          selectedMethods.value.push(method);
+        if (this.selectedMethods.length < 3) {
+          this.selectedMethods.push(method);
         }
       } else {
-        selectedMethods.value.splice(index, 1);
+        this.selectedMethods.splice(index, 1);
       }
-    }
-
-    // Função para verificar a atividade
-    function checkActivity2() {
+    },
+    checkActivity2() {
       let score = 0;
       let feedback = "";
-      if (!selectedTopic.value || !selectedApproach.value || !selectedJustification.value) return;
+      if (!this.selectedTopic || !this.selectedApproach || !this.selectedJustification) return;
 
-      const topicBestApproach = selectedTopic.value.bestApproach;
-      if (topicBestApproach === selectedApproach.value || topicBestApproach === "mixed") {
+      const topicBestApproach = this.selectedTopic.bestApproach;
+      if (topicBestApproach === this.selectedApproach || topicBestApproach === "mixed") {
         score += 50;
         feedback += "<span class='text-green-600 font-bold'>✓ Excelente escolha de abordagem!</span> ";
         if (topicBestApproach === "mixed") {
-          feedback += `Tanto a abordagem qualitativa quanto a quantitativa são válidas para este tema, e você escolheu a ${selectedApproach.value === 'qualitative' ? 'qualitativa' : 'quantitativa'}. `;
+          feedback += `Tanto a abordagem qualitativa quanto a quantitativa são válidas para este tema, e você escolheu a ${this.selectedApproach === 'qualitative' ? 'qualitativa' : 'quantitativa'}. `;
         } else {
-          feedback += `A abordagem ${selectedApproach.value === 'qualitative' ? 'qualitativa' : 'quantitativa'} é realmente a mais adequada para este tema. `;
+          feedback += `A abordagem ${this.selectedApproach === 'qualitative' ? 'qualitativa' : 'quantitativa'} é realmente a mais adequada para este tema. `;
         }
       } else {
         score += 20;
         feedback += "<span class='text-yellow-600 font-bold'>⚠ Sua escolha de abordagem poderia ser reconsiderada.</span> ";
-        feedback += `Para o tema "${selectedTopic.value.title}", a abordagem ${topicBestApproach === 'qualitative' ? 'qualitativa' : 'quantitativa'} talvez fosse mais apropriada. `;
+        feedback += `Para o tema "${this.selectedTopic.title}", a abordagem ${topicBestApproach === 'qualitative' ? 'qualitativa' : 'quantitativa'} talvez fosse mais apropriada. `;
       }
 
       // Avaliação da seleção de métodos
-      if (selectedMethods.value.length >= 2) {
+      if (this.selectedMethods.length >= 2) {
         score += 30;
         feedback += "<span class='text-green-600 font-bold'>✓ Boa seleção de métodos!</span> ";
         feedback += "A combinação de diferentes métodos fortalece sua pesquisa. ";
@@ -284,45 +268,26 @@ export default defineComponent({
         feedback += "<span class='text-yellow-600'>⚠ Considere usar mais de um método</span> para triangular seus dados e obter resultados mais robustos. ";
       }
 
-      projectResult.value = {
-        topic: selectedTopic.value,
-        approach: selectedApproach.value,
-        methods: [...selectedMethods.value],
-        justification: selectedJustification.value,
+      this.projectResult = {
+        topic: this.selectedTopic,
+        approach: this.selectedApproach,
+        methods: [...this.selectedMethods],
+        justification: this.selectedJustification,
         feedback,
         score
       };
-      activity2Score.value = score;
-      activity2Completed.value = true;
+      this.activity2Score = score;
+      this.activity2Completed = true;
+    },
+    resetActivity2() {
+      this.selectedTopic = null;
+      this.selectedApproach = null;
+      this.selectedMethods = [];
+      this.selectedJustification = null;
+      this.projectResult = null;
+      this.activity2Completed = false;
+      this.activity2Score = 0;
     }
-
-    // Função para resetar a atividade
-    function resetActivity2() {
-      selectedTopic.value = null;
-      selectedApproach.value = null;
-      selectedMethods.value = [];
-      selectedJustification.value = null;
-      projectResult.value = null;
-      activity2Completed.value = false;
-      activity2Score.value = 0;
-    }
-
-    return {
-      researchTopics,
-      availableMethods,
-      availableJustifications,
-      selectedTopic,
-      selectedApproach,
-      selectedMethods,
-      selectedJustification,
-      projectResult,
-      activity2Completed,
-      activity2Score,
-      canSubmitActivity2,
-      toggleMethod,
-      checkActivity2,
-      resetActivity2
-    };
   }
 });
 </script>
