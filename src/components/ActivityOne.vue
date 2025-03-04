@@ -104,6 +104,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import type Method from '@/interfaces/Method';
+import { mapMutations, mapState } from 'vuex';
 
 export default defineComponent({
   name: 'ActivityOne',
@@ -131,11 +132,20 @@ export default defineComponent({
         qualitative: [] as Method[],
         quantitative: [] as Method[]
       },
-      activity1Completed: false,
-      activity1Score: 0
     };
   },
+  computed: {
+    ...mapState([
+      'activity1Score',
+      'activity1Completed'
+    ]),
+  },
   methods: {
+    ...mapMutations([
+      'UPDATE_ACTIVITY1_SCORE',
+      'COMPLETE_ACTIVITY1',
+      'RESET_ACTIVITY1'
+    ]),
     classifyMethod(methodId: number) {
       const index = this.methodsToClassify.findIndex((m: Method) => m.id === methodId);
       if (index === -1) return;
@@ -161,8 +171,8 @@ export default defineComponent({
         }
       });
       // Cada acerto vale 10 pontos
-      this.activity1Score = correctCount * 10;
-      this.activity1Completed = true;
+      this.UPDATE_ACTIVITY1_SCORE(correctCount * 10);
+      this.COMPLETE_ACTIVITY1();
     },
     resetActivity1() {
       this.methodsToClassify = [...this.allMethods];
@@ -170,8 +180,7 @@ export default defineComponent({
         qualitative: [],
         quantitative: []
       };
-      this.activity1Completed = false;
-      this.activity1Score = 0;
+      this.RESET_ACTIVITY1();
     }
   }
 });
