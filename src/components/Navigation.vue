@@ -1,14 +1,14 @@
 <template>
     <div class="bg-white rounded-xl shadow-md p-4 mb-6">
         <div class="flex flex-wrap justify-center gap-4">
-            <button 
-                v-for="section in sections" 
-                :key="section.value" 
+            <button
+                v-for="section in sections"
+                :key="section.value"
                 @click="changeSection(section.value)"
                 class="px-4 py-2 rounded-md transition duration-300"
                 :class="
-                currentSection === section.value 
-                    ? 'bg-blue-600 text-white' 
+                currentSection === section.value
+                    ? 'bg-blue-600 text-white'
                     : 'bg-gray-200 hover:bg-gray-300 text-gray-800'">
                 {{ section.label }}
             </button>
@@ -18,6 +18,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { mapMutations } from 'vuex';
 
 export default defineComponent({
   name: 'Navigation',
@@ -27,7 +28,6 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['changeSection'],
   data() {
     return {
       sections: [
@@ -41,8 +41,9 @@ export default defineComponent({
     }
   },
   methods: {
+    ...mapMutations(['SET_CURRENT_SECTION']),
     changeSection(section: string) {
-      this.$emit('changeSection', section);
+      this.SET_CURRENT_SECTION(section);
     }
   }
 });

@@ -138,6 +138,7 @@
 import { defineComponent } from 'vue';
 import type ResearchTopic from '@/interfaces/ResearchTopic';
 import type ProjectResult from '@/interfaces/ProjectResult';
+import { mapMutations, mapState } from 'vuex';
 
 export default defineComponent({
   name: 'ActivityTwo',
@@ -163,8 +164,6 @@ export default defineComponent({
       selectedMethods: [] as string[],
       selectedJustification: null as string | null,
       projectResult: null as ProjectResult | null,
-      activity2Completed: false,
-      activity2Score: 0
     }
   },
   created() {
@@ -220,6 +219,10 @@ export default defineComponent({
     ];
   },
   computed: {
+    ...mapState([
+      'activity2Completed',
+      'activity2Score'
+    ]),
     canSubmitActivity2(): boolean {
       return this.selectedTopic !== null &&
         this.selectedApproach !== null &&
@@ -228,6 +231,11 @@ export default defineComponent({
     }
   },
   methods: {
+    ...mapMutations([
+      'UPDATE_ACTIVITY2_SCORE',
+      'COMPLETE_ACTIVITY2',
+      'RESET_ACTIVITY2'
+    ]),
     toggleMethod(method: string): void {
       const index = this.selectedMethods.indexOf(method);
       if (index === -1) {
@@ -276,8 +284,8 @@ export default defineComponent({
         feedback,
         score
       };
-      this.activity2Score = score;
-      this.activity2Completed = true;
+      this.UPDATE_ACTIVITY2_SCORE(score);
+      this.COMPLETE_ACTIVITY2();
     },
     resetActivity2() {
       this.selectedTopic = null;
@@ -285,8 +293,7 @@ export default defineComponent({
       this.selectedMethods = [];
       this.selectedJustification = null;
       this.projectResult = null;
-      this.activity2Completed = false;
-      this.activity2Score = 0;
+      this.RESET_ACTIVITY2();
     }
   }
 });

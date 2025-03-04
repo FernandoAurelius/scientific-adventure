@@ -85,7 +85,7 @@
                 <td class="py-3 px-3 text-right font-bold">{{ player.score }}</td>
                 <td class="py-3 px-3 text-center">
                   <div class="flex justify-center space-x-1">
-                    <span v-for="(badge, bIndex) in player.badges" :key="bIndex">{{ badge }}</span>
+                    <span v-for="(badge, bIndex) in earnedBadges" :key="bIndex">{{ badge.emoji }}</span>
                   </div>
                 </td>
               </tr>
@@ -99,90 +99,21 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import type Player from '@/interfaces/Player';
-import type Badge from '@/interfaces/Badge';
+import { mapGetters, mapState } from 'vuex';
 
 export default defineComponent({
   name: 'Ranking',
-  props: {
-    playerName: {
-      type: String,
-      required: true
-    },
-    totalScore: {
-      type: Number,
-      required: true
-    },
-    activity1Score: {
-      type: Number,
-      required: true
-    },
-    activity2Score: {
-      type: Number,
-      required: true
-    },
-  },
-  data() {
-    return {
-      earnedBadges: [] as Badge[],
-      leaderboard: [] as Player[]
-    }
-  },
   computed: {
-      getEarnedBadges() {
-        const badges: Badge[] = [];
-
-        if (this.activity1Score > 0) {
-          badges.push({
-            emoji: "🔍",
-            name: "Classificador",
-            description: "Completou a atividade de classificação"
-          });
-        }
-
-        if (this.activity2Score > 0) {
-          badges.push({
-            emoji: "📊",
-            name: "Pesquisador",
-            description: "Elaborou um projeto de pesquisa"
-          });
-        }
-
-        if (this.totalScore >= 150) {
-          badges.push({
-            emoji: "🏆",
-            name: "Cientista Master",
-            description: "Alcançou pontuação alta"
-          });
-        }
-
-        return badges;
-      },
-      loadLeaderboard() {
-        const otherPlayers: Player[] = [
-          { name: "Ana Silva", score: 190, badges: ["🔍", "📊", "🏆"] },
-          { name: "Pedro Santos", score: 165, badges: ["🔍", "📊", "🏆"] },
-          { name: "Júlia Oliveira", score: 145, badges: ["🔍", "📊"] },
-          { name: "Carlos Mendes", score: 120, badges: ["🔍", "📊"] },
-          { name: "Mariana Costa", score: 100, badges: ["🔍"] },
-          { name: "Rafael Souza", score: 85, badges: ["🔍"] }
-        ];
-
-        const players: Player[] = [...otherPlayers];
-        if (this.playerName) {
-          players.push({
-            name: this.playerName,
-            score: this.totalScore,
-            badges: this.getEarnedBadges.map((badge: Badge) => badge.emoji)
-          });
-        }
-
-        return players.sort((a: Player, b: Player) => b.score - a.score);
-      },
+     ...mapState([
+      'playerName',
+      'totalScore',
+      'activity1Score',
+      'activity2Score'
+     ]),
+     ...mapGetters([
+      'earnedBadges',
+      'leaderboard'
+     ])
   },
-  created() {
-    this.earnedBadges = this.getEarnedBadges;
-    this.leaderboard = this.loadLeaderboard;
-  }
 });
 </script>
