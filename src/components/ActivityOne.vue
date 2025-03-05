@@ -14,43 +14,61 @@
     <!-- Se a atividade não foi completada, exibe as áreas para classificar -->
     <div v-if="!activity1Completed" class="mb-8">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+
         <!-- Área dos métodos para classificar -->
-        <div class="md:col-span-1 bg-gray-100 p-4 rounded-lg">
-          <h3 class="font-bold text-gray-700 mb-3">Métodos para Classificar</h3>
-          <div class="space-y-3">
-            <div v-for="(method, index) in methodsToClassify" :key="method.id" @click="classifyMethod(method.id)"
-              class="bg-white p-3 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors shadow-sm">
-              {{ method.name }}
-              <!-- De outro modo, o linter vai reclamar de estarmos declarando index no loop mas não utilizando ele -->
-              <p class="hidden">{{ index }}</p>
-            </div>
+          <div class="md:col-span-1 bg-gray-100 p-4 rounded-lg">
+            <h3 class="font-bold text-gray-700 mb-3">Métodos para Classificar</h3>
+            <draggable
+              v-model="methodsToClassify"
+              :group="{ name: 'methods', pull: true, put: false }"
+              class="space-y-3"
+              animation="200"
+              @start="onDragStart"
+              @end="onDragEnd">
+              <div v-for="(method, index) in methodsToClassify" :key="method.id" @click="classifyMethod(method.id)"
+                class="bg-white p-3 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors shadow-sm">
+                {{ method.name }}
+                <!-- De outro modo, o linter vai reclamar de estarmos declarando index no loop mas não utilizando ele -->
+                <p class="hidden">{{ index }}</p>
+              </div>
+            </draggable>
           </div>
-        </div>
 
         <!-- Áreas de classificação -->
+
         <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="bg-blue-100 p-4 rounded-lg">
-            <h3 class="font-bold text-blue-700 mb-3">Pesquisa Qualitativa</h3>
-            <div class="min-h-32 space-y-3">
-              <transition-group name="bounce">
-                <div v-for="method in classifiedMethods.qualitative" :key="method.id"
-                  class="bg-white p-3 rounded border border-blue-300 shadow-sm">
-                  {{ method.name }}
-                </div>
-              </transition-group>
+          <draggable>
+            <div class="bg-blue-100 p-4 rounded-lg">
+              <h3 class="font-bold text-blue-700 mb-3">Pesquisa Qualitativa</h3>
+              <draggable
+                v-model="classifiedMethods.qualitative"
+                :group="{ name: 'methods', pull: false, put: true }"
+                class="min-h-32 space-y-3"
+                animation="200">
+                <transition-group name="bounce">
+                  <div v-for="method in classifiedMethods.qualitative" :key="method.id"
+                    class="bg-white p-3 rounded border border-blue-300 shadow-sm">
+                    {{ method.name }}
+                  </div>
+                </transition-group>
+              </draggable>
             </div>
-          </div>
-          <div class="bg-green-100 p-4 rounded-lg">
-            <h3 class="font-bold text-green-700 mb-3">Pesquisa Quantitativa</h3>
-            <div class="min-h-32 space-y-3">
-              <transition-group name="bounce">
-                <div v-for="method in classifiedMethods.quantitative" :key="method.id"
-                  class="bg-white p-3 rounded border border-green-300 shadow-sm">
-                  {{ method.name }}
-                </div>
-              </transition-group>
+          </draggable>
+
+          <draggable>
+            <div class="bg-green-100 p-4 rounded-lg">
+              <h3 class="font-bold text-green-700 mb-3">Pesquisa Quantitativa</h3>
+              <div class="min-h-32 space-y-3">
+                <transition-group name="bounce">
+                  <div v-for="method in classifiedMethods.quantitative" :key="method.id"
+                    class="bg-white p-3 rounded border border-green-300 shadow-sm">
+                    {{ method.name }}
+                  </div>
+                </transition-group>
+              </div>
             </div>
-          </div>
+          </draggable>
+
         </div>
       </div>
 
@@ -105,6 +123,7 @@
 import { defineComponent } from 'vue';
 import type Method from '@/interfaces/Method';
 import { mapActions, mapMutations, mapState } from 'vuex';
+import draggable from 'vuedraggable';
 
 export default defineComponent({
   name: 'ActivityOne',
@@ -113,6 +132,9 @@ export default defineComponent({
       type: String,
       required: true
     }
+  },
+  components: {
+    draggable
   },
   data() {
     const allMethods: Method[] = [
