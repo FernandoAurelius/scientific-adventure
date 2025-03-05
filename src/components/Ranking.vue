@@ -32,11 +32,7 @@
         </div>
         <div class="p-4">
           <div class="grid grid-cols-3 gap-3">
-            <div
-              v-for="(badge, index) in earnedBadges"
-              :key="index"
-              class="text-center bg-gray-50 rounded-lg p-3"
-            >
+            <div v-for="(badge, index) in earnedBadges" :key="index" class="text-center bg-gray-50 rounded-lg p-3">
               <div class="text-2xl mb-1">{{ badge.emoji }}</div>
               <div class="font-bold text-sm">{{ badge.name }}</div>
               <div class="text-xs text-gray-600">{{ badge.description }}</div>
@@ -66,12 +62,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr
-                v-for="(player, index) in leaderboard"
-                :key="index"
-                class="border-b hover:bg-gray-50"
-                :class="{'bg-blue-50': player.name === playerName}"
-              >
+              <tr v-for="(player, index) in leaderboard" :key="index" class="border-b hover:bg-gray-50"
+                :class="{ 'bg-blue-50': player.name === playerName }">
                 <td class="py-3 px-3">
                   <span class="font-bold" :class="{
                     'text-yellow-500': index === 0,
@@ -82,10 +74,10 @@
                   </span>
                 </td>
                 <td class="py-3 px-3 font-medium">{{ player.name }}</td>
-                <td class="py-3 px-3 text-right font-bold">{{ player.score }}</td>
+                <td class="py-3 px-3 text-right font-bold">{{ player.totalScore }}</td>
                 <td class="py-3 px-3 text-center">
                   <div class="flex justify-center space-x-1">
-                    <span v-for="(badge, bIndex) in earnedBadges" :key="bIndex">{{ badge.emoji }}</span>
+                    <span v-for="badge in player.earnedBadges" :key="badge.name">{{ badge.emoji }}</span>
                   </div>
                 </td>
               </tr>
@@ -99,21 +91,42 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { mapGetters, mapState } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 
 export default defineComponent({
   name: 'Ranking',
+  data() {
+    return {
+      updateInterval: null as NodeJS.Timeout | null
+    }
+  },
   computed: {
-     ...mapState([
+    ...mapState([
       'playerName',
       'totalScore',
       'activity1Score',
       'activity2Score'
-     ]),
-     ...mapGetters([
+    ]),
+    ...mapGetters([
       'earnedBadges',
       'leaderboard'
-     ])
+    ])
+  },
+  methods: {
+    ...mapActions([
+      'fetchLeaderboard'
+    ])
+  },
+  created() {
+    this.fetchLeaderboard();
+    this.updateInterval = setInterval(() => {
+      this.fetchLeaderboard();
+    }, 15000);
+  },
+  beforeUnmount() {
+      if (this.updateInterval) {
+        clearInterval(this.updateInterval);
+      }
   },
 });
 </script>

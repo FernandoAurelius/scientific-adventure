@@ -138,7 +138,7 @@
 import { defineComponent } from 'vue';
 import type ResearchTopic from '@/interfaces/ResearchTopic';
 import type ProjectResult from '@/interfaces/ProjectResult';
-import { mapMutations, mapState } from 'vuex';
+import { mapActions, mapMutations, mapState } from 'vuex';
 
 export default defineComponent({
   name: 'ActivityTwo',
@@ -221,7 +221,8 @@ export default defineComponent({
   computed: {
     ...mapState([
       'activity2Completed',
-      'activity2Score'
+      'activity2Score',
+      'activity1Score'
     ]),
     canSubmitActivity2(): boolean {
       return this.selectedTopic !== null &&
@@ -232,9 +233,11 @@ export default defineComponent({
   },
   methods: {
     ...mapMutations([
-      'UPDATE_ACTIVITY2_SCORE',
       'COMPLETE_ACTIVITY2',
       'RESET_ACTIVITY2'
+    ]),
+    ...mapActions([
+      'updatePlayerProgress'
     ]),
     toggleMethod(method: string): void {
       const index = this.selectedMethods.indexOf(method);
@@ -284,7 +287,11 @@ export default defineComponent({
         feedback,
         score
       };
-      this.UPDATE_ACTIVITY2_SCORE(score);
+      this.updatePlayerProgress({
+        activity2Score: score,
+        activity2Completed: true,
+        totalScore: score + this.activity1Score
+      });
       this.COMPLETE_ACTIVITY2();
     },
     resetActivity2() {
@@ -294,6 +301,11 @@ export default defineComponent({
       this.selectedJustification = null;
       this.projectResult = null;
       this.RESET_ACTIVITY2();
+      this.updatePlayerProgress({
+        activity2Score: 0,
+        activity2Completed: false,
+        totalScore: this.activity1Score
+      });
     }
   }
 });

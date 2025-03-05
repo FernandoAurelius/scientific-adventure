@@ -33,18 +33,10 @@ export default {
 
     return badges;
   },
+  // Agora sim, usando os dados do Firestore
   leaderboard: (state: State) => {
-    // Isso vai vir do Firestore quando configurarmos ele
-    const players: Player[] = [];
-
-    if (state.playerName) {
-      players.push({
-        name: state.playerName,
-        score: state.totalScore,
-        badges: state.earnedBadges.map((badge: Badge) => badge.emoji)
-      });
-    }
-
-    return players.sort((a: Player, b: Player) => b.score - a.score);
+    return state.leaderboard.sort(
+      (a: Player, b: Player) => b.totalScore - a.totalScore
+    );
   }
 }

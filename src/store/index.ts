@@ -2,6 +2,7 @@ import type State from "@/interfaces/State";
 import { createStore } from "vuex";
 import mutations from "./mutations";
 import getters from "./getters";
+import actions from "./actions";
 
 export default createStore<State>({
   state: {
@@ -16,6 +17,7 @@ export default createStore<State>({
     activity2Completed: false,
     projectResult: null
   },
+  actions,
   mutations,
-  getters
-})
+  getters,
+});

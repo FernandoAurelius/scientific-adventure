@@ -26,7 +26,7 @@ import QuantitativaSection from './components/QuantitativaSection.vue';
 import ActivityOne from './components/ActivityOne.vue';
 import ActivityTwo from './components/ActivityTwo.vue';
 import Ranking from './components/Ranking.vue';
-import { mapMutations, mapState } from 'vuex';
+import { mapActions, mapMutations, mapState } from 'vuex';
 
 export default defineComponent({
   name: 'App',
@@ -52,13 +52,23 @@ export default defineComponent({
   },
   methods: {
     ...mapMutations([
-      'SET_PLAYER_NAME',
       'SET_CURRENT_SECTION'
     ]),
-    startGame(playerName: string) {
-      this.SET_PLAYER_NAME(playerName);
-      this.SET_CURRENT_SECTION('intro');
+    ...mapActions([
+      'initializePlayer',
+      'fetchLeaderboard'
+    ]),
+    async startGame(playerName: string) {
+      await this.initializePlayer(playerName);
+      localStorage.setItem('playerName', playerName);
     }
+  },
+  created() {
+    const savedPlayerName = localStorage.getItem('playerName');
+    if (savedPlayerName) {
+      this.initializePlayer(savedPlayerName);
+    }
+    this.fetchLeaderboard();
   }
 });
 </script>
