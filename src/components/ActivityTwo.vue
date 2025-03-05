@@ -287,12 +287,14 @@ export default defineComponent({
         feedback,
         score
       };
+
+      this.COMPLETE_ACTIVITY2();
+
       this.updatePlayerProgress({
         activity2Score: score,
         activity2Completed: true,
         totalScore: score + this.activity1Score
       });
-      this.COMPLETE_ACTIVITY2();
     },
     resetActivity2() {
       this.selectedTopic = null;
@@ -300,7 +302,9 @@ export default defineComponent({
       this.selectedMethods = [];
       this.selectedJustification = null;
       this.projectResult = null;
+
       this.RESET_ACTIVITY2();
+
       this.updatePlayerProgress({
         activity2Score: 0,
         activity2Completed: false,

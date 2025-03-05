@@ -5,18 +5,23 @@
   <div v-else>
     <HeaderComp :playerName="playerName" :totalScore="totalScore" />
     <Navigation :currentSection="currentSection" />
+
     <!-- Renderiza a seção atual -->
     <IntroSection v-if="currentSection === 'intro'" />
     <QualitativaSection v-if="currentSection === 'qualitativa'" />
     <QuantitativaSection v-if="currentSection === 'quantitativa'" />
+
     <ActivityOne v-if="currentSection === 'atividade1'" :playerName="playerName" />
-    <ActivityTwo v-if="currentSection === 'atividade2'" :playerName="playerName" />
+    <KeepAlive include="ActivityTwo">
+      <ActivityTwo v-if="currentSection === 'atividade2'" :playerName="playerName" />
+    </KeepAlive>
+
     <Ranking v-if="currentSection === 'ranking'" />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, KeepAlive } from 'vue';
 import WelcomeScreen from './components/WelcomeScreen.vue';
 import HeaderComp from './components/HeaderComp.vue';
 import Navigation from './components/Navigation.vue';
@@ -39,7 +44,8 @@ export default defineComponent({
     QuantitativaSection,
     ActivityOne,
     ActivityTwo,
-    Ranking
+    Ranking,
+    KeepAlive
   },
   computed: {
     ...mapState([

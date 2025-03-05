@@ -55,10 +55,26 @@ export default {
   * ---
   * Depois de desestruturar o objeto, temos que tipar as propriedades que estamos usando, por isso { state, commit }: { state: State, commit: Commit }.
   * */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async updatePlayerProgress({ state, commit, getters }: { state: State, commit: Commit, getters: any }, payload: Partial<Player>) {
+  async updatePlayerProgress(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    { state, commit, getters, dispatch }: { state: State, commit: Commit, getters: any, dispatch: Dispatch },
+    payload: Partial<Player>
+  ): Promise<void> {
   try {
       if (state.playerName) {
+        if (payload.activity1Score !== undefined) {
+          commit('UPDATE_ACTIVITY1_SCORE', payload.activity1Score);
+        }
+        if (payload.activity2Score !== undefined) {
+          commit('UPDATE_ACTIVITY2_SCORE', payload.activity2Score);
+        }
+        if (payload.activity1Completed !== undefined) {
+          commit('COMPLETE_ACTIVITY1');
+        }
+        if (payload.activity2Completed !== undefined) {
+          commit('COMPLETE_ACTIVITY2');
+        }
+
         const earnedBadges = getters.earnedBadges;
         const updates = {
           ...payload,
@@ -67,14 +83,9 @@ export default {
         }
 
         await playerService.updateScore(state.playerName, updates);
-        if (payload.activity1Score !== undefined) {
-          commit('UPDATE_ACTIVITY1_SCORE', payload.activity1Score);
-        }
-        if (payload.activity2Score !== undefined) {
-          commit('UPDATE_ACTIVITY2_SCORE', payload.activity2Score);
-        }
 
         commit('UPDATE_EARNED_BADGES', earnedBadges);
+        await dispatch('fetchLeaderboard');
       }
     } catch (error) {
       console.error('Erro atualizando o progresso do player:', error);

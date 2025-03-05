@@ -151,8 +151,11 @@ export default defineComponent({
     ]),
     classifyMethod(methodId: number) {
       const index = this.methodsToClassify.findIndex((m: Method) => m.id === methodId);
+
       if (index === -1) return;
+
       const method = this.methodsToClassify.splice(index, 1)[0];
+
       if (method.type === "qualitative") {
         this.classifiedMethods.qualitative.push(method);
       } else {
@@ -161,25 +164,29 @@ export default defineComponent({
     },
     checkActivity1() {
       let correctCount = 0;
+
       // Verifica os métodos classificados como qualitativos
       this.classifiedMethods.qualitative.forEach((method: Method) => {
         if (method.type === "qualitative") {
           correctCount++;
         }
       });
+
       // Verifica os métodos classificados como quantitativos
       this.classifiedMethods.quantitative.forEach((method: Method) => {
         if (method.type === "quantitative") {
           correctCount++;
         }
       });
+
+      this.COMPLETE_ACTIVITY1();
+
       // Cada acerto vale 10 pontos
       this.updatePlayerProgress({
         activity1Score: correctCount * 10,
         activity1Completed: true,
         totalScore: correctCount * 10 + this.activity2Score
       });
-      this.COMPLETE_ACTIVITY1();
     },
     resetActivity1() {
       this.methodsToClassify = [...this.allMethods];
