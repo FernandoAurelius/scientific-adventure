@@ -104,7 +104,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import type Method from '@/interfaces/Method';
-import { mapMutations, mapState } from 'vuex';
+import { mapActions, mapMutations, mapState } from 'vuex';
 
 export default defineComponent({
   name: 'ActivityOne',
@@ -137,19 +137,25 @@ export default defineComponent({
   computed: {
     ...mapState([
       'activity1Score',
+      'activity2Score',
       'activity1Completed'
     ]),
   },
   methods: {
     ...mapMutations([
-      'UPDATE_ACTIVITY1_SCORE',
       'COMPLETE_ACTIVITY1',
       'RESET_ACTIVITY1'
     ]),
+    ...mapActions([
+      'updatePlayerProgress'
+    ]),
     classifyMethod(methodId: number) {
       const index = this.methodsToClassify.findIndex((m: Method) => m.id === methodId);
+
       if (index === -1) return;
+
       const method = this.methodsToClassify.splice(index, 1)[0];
+
       if (method.type === "qualitative") {
         this.classifiedMethods.qualitative.push(method);
       } else {
@@ -158,29 +164,45 @@ export default defineComponent({
     },
     checkActivity1() {
       let correctCount = 0;
+
       // Verifica os métodos classificados como qualitativos
       this.classifiedMethods.qualitative.forEach((method: Method) => {
         if (method.type === "qualitative") {
           correctCount++;
         }
       });
+
       // Verifica os métodos classificados como quantitativos
       this.classifiedMethods.quantitative.forEach((method: Method) => {
         if (method.type === "quantitative") {
           correctCount++;
         }
       });
-      // Cada acerto vale 10 pontos
-      this.UPDATE_ACTIVITY1_SCORE(correctCount * 10);
+
       this.COMPLETE_ACTIVITY1();
+
+      // Cada acerto vale 10 pontos
+      this.updatePlayerProgress({
+        activity1Score: correctCount * 10,
+        activity1Completed: true,
+        totalScore: correctCount * 10 + this.activity2Score
+      });
     },
     resetActivity1() {
       this.methodsToClassify = [...this.allMethods];
+
       this.classifiedMethods = {
         qualitative: [],
         quantitative: []
       };
+
       this.RESET_ACTIVITY1();
+
+      this.updatePlayerProgress({
+        activity1Score: 0,
+        activity1Completed: false,
+        totalScore: this.activity2Score
+      });
     }
   }
 });

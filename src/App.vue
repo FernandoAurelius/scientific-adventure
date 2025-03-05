@@ -5,18 +5,23 @@
   <div v-else>
     <HeaderComp :playerName="playerName" :totalScore="totalScore" />
     <Navigation :currentSection="currentSection" />
+
     <!-- Renderiza a seção atual -->
     <IntroSection v-if="currentSection === 'intro'" />
     <QualitativaSection v-if="currentSection === 'qualitativa'" />
     <QuantitativaSection v-if="currentSection === 'quantitativa'" />
+
     <ActivityOne v-if="currentSection === 'atividade1'" :playerName="playerName" />
-    <ActivityTwo v-if="currentSection === 'atividade2'" :playerName="playerName" />
+    <KeepAlive include="ActivityTwo">
+      <ActivityTwo v-if="currentSection === 'atividade2'" :playerName="playerName" />
+    </KeepAlive>
+
     <Ranking v-if="currentSection === 'ranking'" />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, KeepAlive } from 'vue';
 import WelcomeScreen from './components/WelcomeScreen.vue';
 import HeaderComp from './components/HeaderComp.vue';
 import Navigation from './components/Navigation.vue';
@@ -26,7 +31,7 @@ import QuantitativaSection from './components/QuantitativaSection.vue';
 import ActivityOne from './components/ActivityOne.vue';
 import ActivityTwo from './components/ActivityTwo.vue';
 import Ranking from './components/Ranking.vue';
-import { mapMutations, mapState } from 'vuex';
+import { mapActions, mapMutations, mapState } from 'vuex';
 
 export default defineComponent({
   name: 'App',
@@ -39,7 +44,8 @@ export default defineComponent({
     QuantitativaSection,
     ActivityOne,
     ActivityTwo,
-    Ranking
+    Ranking,
+    KeepAlive
   },
   computed: {
     ...mapState([
@@ -52,13 +58,23 @@ export default defineComponent({
   },
   methods: {
     ...mapMutations([
-      'SET_PLAYER_NAME',
       'SET_CURRENT_SECTION'
     ]),
-    startGame(playerName: string) {
-      this.SET_PLAYER_NAME(playerName);
-      this.SET_CURRENT_SECTION('intro');
+    ...mapActions([
+      'initializePlayer',
+      'fetchLeaderboard'
+    ]),
+    async startGame(playerName: string) {
+      await this.initializePlayer(playerName);
+      localStorage.setItem('playerName', playerName);
     }
+  },
+  created() {
+    const savedPlayerName = localStorage.getItem('playerName');
+    if (savedPlayerName) {
+      this.initializePlayer(savedPlayerName);
+    }
+    this.fetchLeaderboard();
   }
 });
 </script>
